@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marks Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input {
+            margin-bottom: 10px;
+            padding: 5px;
+            width: 200px;
+        }
+        button {
+            padding: 5px 10px;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Student Marks Prediction</h1>
+    <form id="prediction-form">
+        <label for="study_hours">Study Hours:</label>
+        <input type="number" id="study_hours" required><br>
+        <label for="attendance">Attendance (%):</label>
+        <input type="number" id="attendance" required><br>
+        <label for="previous_grades">Previous Grades:</label>
+        <input type="number" id="previous_grades" required><br>
+        <button type="submit">Predict</button>
+    </form>
+    <h2 id="result"></h2>
+
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const study_hours = document.getElementById('study_hours').value;
+            const attendance = document.getElementById('attendance').value;
+            const previous_grades = document.getElementById('previous_grades').value;
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    study_hours: study_hours,
+                    attendance: attendance,
+                    previous_grades: previous_grades
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('result').innerText = data.error;
+                } else {
+                    document.getElementById('result').innerText = `Predicted Marks: ${data.predicted_marks}`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerText = 'Error occurred while predicting marks.';
+            });
+        });
+    </script>
+</body>
+</html>
